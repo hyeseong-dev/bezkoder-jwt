@@ -1,5 +1,6 @@
 package com.bezkoder.springbootsecuritylogin.controller;
 
+import com.bezkoder.springbootsecuritylogin.jwt.AuthEntryPointJwt;
 import com.bezkoder.springbootsecuritylogin.model.ERole;
 import com.bezkoder.springbootsecuritylogin.model.Role;
 import com.bezkoder.springbootsecuritylogin.model.User;
@@ -12,8 +13,11 @@ import com.bezkoder.springbootsecuritylogin.response.MessageResponse;
 import com.bezkoder.springbootsecuritylogin.response.UserInfoResponse;
 import com.bezkoder.springbootsecuritylogin.services.UserDetailsImpl;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,7 +25,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.ErrorResponse;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestClientResponseException;
 
 import java.util.HashSet;
 import java.util.List;
@@ -54,6 +61,8 @@ public class AuthController {
 
     @Autowired
     JwtUtils jwtUtils; // JWT 생성 및 검증 유틸리티
+
+    private static final Logger logger = LoggerFactory.getLogger(AuthEntryPointJwt.class);
 
     /**
      * 로그인 요청을 처리하고 JWT 쿠키를 생성하여 반환합니다.
